@@ -1,0 +1,43 @@
+/* === VARIABLES ===
+primary-color: #007bff;
+primary-color-hover: #0056b3;
+background-color: #ffffff;
+input-bg-color: #f9f9f9;
+input-border-color: #cccccc;
+input-text-color: #1a1a1a;
+label-color: #333333;
+font-family: Arial, sans-serif;
+font-size: 14px;
+==================== */
+
+QMainWindow {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+QLabel {
+    color: #333333;
+}
+
+QLineEdit#inputField {
+    min-width: 300px;
+    max-width: 500px;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #1a1a1a;
+}
+
+QPushButton#submitButton {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+}
+
+QPushButton#submitButton:hover {
+    background-color: #0056b3;
+}
