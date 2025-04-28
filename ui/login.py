@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QLineEdit,
     QVBoxLayout, QGridLayout, QSpacerItem, QSizePolicy, QPushButton
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QSettings
 from .s3_client import S3Client 
 from .file_browser import FileBrowserPage
 
@@ -11,7 +11,7 @@ S3_CREDENTIALS = [
     "Secret Access Key",
     "Bucket Name",
     "Region",
-    "Endpoint URL"
+    "Service Name"
 ]
 
 class LoginPage(QMainWindow):
@@ -23,8 +23,7 @@ class LoginPage(QMainWindow):
         self.setCentralWidget(central_widget)
 
         main_layout = QVBoxLayout(central_widget)
-        main_layout.addSpacerItem(QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         # Form layout
         form_layout = QGridLayout()
@@ -52,23 +51,34 @@ class LoginPage(QMainWindow):
         submit_button.setObjectName("submitButton")
         submit_button.setFixedWidth(200)
         submit_button.clicked.connect(self.on_submit)
-        main_layout.addWidget(
-            submit_button, alignment=Qt.AlignmentFlag.AlignHCenter)
+        main_layout.addWidget(submit_button, alignment=Qt.AlignmentFlag.AlignHCenter)
 
-        main_layout.addSpacerItem(QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        
+        self.load_credentials()
 
     def on_submit(self):
         keys = {field: self.textboxes[field].text() for field in 
-                ["Access Key ID", "Secret Access Key", "Bucket Name", "Region", "Endpoint URL"]}
-        access_key, secret_key, bucket_name, region, endpoint_url = keys.values()
+                ["Access Key ID", "Secret Access Key", "Bucket Name", "Region", "Service Name"]}
+        access_key, secret_key, bucket_name, region, service_name = keys.values()
 
-        s3_client = S3Client.login_to_s3(access_key, secret_key, region, endpoint_url)
+        self.save_credentials()
+
+        s3_client = S3Client.login_to_s3(access_key, secret_key, region, service_name)
 
         if s3_client:
-            # If login is successful, proceed to FileBrowserPage
             self.file_browser_page = FileBrowserPage(s3_client, bucket_name)
-            self.setCentralWidget(self.file_browser_page)  # Switch to the new page
+            self.setCentralWidget(self.file_browser_page)
         else:
-            # Handle login failure (you can add an error message or dialog here)
             print("Login failed. Please check your credentials.")
+
+    def save_credentials(self):
+        settings = QSettings("MyCompany", "S3ClientApp")
+        for field in S3_CREDENTIALS:
+            settings.setValue(field, self.textboxes[field].text())
+
+    def load_credentials(self):
+        settings = QSettings("MyCompany", "S3ClientApp")
+        for field in S3_CREDENTIALS:
+            saved_value = settings.value(field, "")
+            self.textboxes[field].setText(saved_value)

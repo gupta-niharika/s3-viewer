@@ -3,14 +3,13 @@ from PyQt6.QtCore import Qt, QAbstractItemModel, QModelIndex, QVariant
 
 
 class S3Client:
-    def login_to_s3(access_key, secret_key, region, endpoint_url):
+    def login_to_s3(access_key, secret_key, region, service_name):
         try:
             s3_client = boto3.client(
                 's3',
                 aws_access_key_id=access_key,
                 aws_secret_access_key=secret_key,
                 region_name=region,
-                endpoint_url=endpoint_url
             )
             return s3_client 
         except Exception as e:

@@ -1,3 +1,4 @@
 s3-viewer/.venv/*
 vscode/*
 /ui/__pycache__/*
+.venv/*
